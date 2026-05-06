@@ -12,17 +12,17 @@ class Autor(models.Model):
 
     # TODO: implementar los campos del modelo
     # Ejemplo de campo:
-    # nombre = models.CharField(max_length=120)
+    nombre = models.CharField(max_length=120)
     #
     # nombre   → CharField (max_length a elección)
-    # email    → EmailField (unique=True)
+    email    = models.EmailField (unique=True)
     # biografia → TextField (blank=True para hacerlo opcional)
 
     pass
 
     # Opcional: definir __str__ para que sea legible en el admin y en el shell
-    # def __str__(self) -> str:
-    #     return self.nombre
+    def __str__(self) -> str:
+         return self.nombre
 
 
 class Categoria(models.Model):
@@ -32,11 +32,11 @@ class Categoria(models.Model):
     """
 
     # TODO: implementar el campo nombre (unique=True)
+    nombre = models.CharField(max_length=120,unique=True)
+    
 
-    pass
-
-    # def __str__(self) -> str:
-    #     return self.nombre
+    def __str__(self) -> str:
+         return self.nombre
 
 
 class Libro(models.Model):
@@ -46,12 +46,12 @@ class Libro(models.Model):
     """
 
     # TODO: implementar los campos:
-    # titulo          → CharField
-    # isbn            → CharField (unique=True)
-    # fecha_publicacion → DateField
-    # cantidad_total  → PositiveIntegerField
-    # autor           → ForeignKey(Autor, on_delete=models.PROTECT)
-    # categorias      → ManyToManyField(Categoria)
+    titulo          = models.CharField
+    isbn            = models.CharField (unique=True)
+    fecha_publicacion = models.DateField
+    cantidad_total  = models.PositiveIntegerField
+    autor           = models.ForeignKey(Autor, on_delete=models.PROTECT)
+    categorias      = models.ManyToManyField(Categoria)
     #
     # Preguntas guía:
     # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
@@ -68,6 +68,7 @@ class Libro(models.Model):
         # TODO: implementar con ORM usando filter sobre los préstamos relacionados
         # Pista: self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
         #        (o el related_name que hayas definido en Prestamo.libro)
+        
         raise NotImplementedError
 
     def disponibles(self) -> int:
@@ -82,6 +83,9 @@ class Libro(models.Model):
         """Retorna True si hay al menos una copia disponible."""
         # TODO: implementar
         raise NotImplementedError
+    
+    def __str__(self) -> str:
+         return self.titulo
 
 
 class Prestamo(models.Model):
@@ -91,10 +95,10 @@ class Prestamo(models.Model):
     """
 
     # TODO: implementar los campos:
-    # libro              → ForeignKey(Libro, on_delete=models.CASCADE)
-    # nombre_prestatario → CharField
-    # fecha_prestamo     → DateField
-    # fecha_devolucion   → DateField (null=True, blank=True)
+    libro              = models.ForeignKey(Libro, on_delete=models.CASCADE)
+    nombre_prestatario = models.CharField
+    fecha_prestamo     = models.DateField
+    fecha_devolucion   = models.DateField (null=True, blank=True)
     #
     # Preguntas guía:
     # ¿Por qué usamos CASCADE aquí y PROTECT en Libro→Autor?
