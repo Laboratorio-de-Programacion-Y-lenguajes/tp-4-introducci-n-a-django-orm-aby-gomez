@@ -16,7 +16,7 @@ class Autor(models.Model):
     #
     # nombre   → CharField (max_length a elección)
     email    = models.EmailField (unique=True)
-    # biografia → TextField (blank=True para hacerlo opcional)
+    biografia = models.TextField (blank=True)
 
     pass
 
@@ -46,15 +46,16 @@ class Libro(models.Model):
     """
 
     # TODO: implementar los campos:
-    titulo          = models.CharField
+    titulo          = models.CharField(max_length=200)
     isbn            = models.CharField (unique=True)
-    fecha_publicacion = models.DateField
-    cantidad_total  = models.PositiveIntegerField
+    fecha_publicacion = models.DateField()
+    cantidad_total  = models.PositiveIntegerField()
     autor           = models.ForeignKey(Autor, on_delete=models.PROTECT)
     categorias      = models.ManyToManyField(Categoria)
     #
     # Preguntas guía:
     # ¿Qué pasa si eliminás un autor que tiene libros? (PROTECT vs CASCADE)
+    #no se puede eliminar  porque hay libros de dependen del autor
     # ¿Por qué isbn debe ser único?
 
     pass
@@ -66,10 +67,10 @@ class Libro(models.Model):
         Un préstamo es "activo" cuando no se ha registrado devolución.
         """
         # TODO: implementar con ORM usando filter sobre los préstamos relacionados
-        # Pista: self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
+        return self.prestamo_set.filter(fecha_devolucion__isnull=True).count()
         #        (o el related_name que hayas definido en Prestamo.libro)
         
-        raise NotImplementedError
+       
 
     def disponibles(self) -> int:
         """
@@ -77,12 +78,13 @@ class Libro(models.Model):
         cantidad_total - prestamos_activos()
         """
         # TODO: implementar
-        raise NotImplementedError
+        return self.cantidad_total - self.prestamos_activos()
+
 
     def tiene_disponibles(self) -> bool:
         """Retorna True si hay al menos una copia disponible."""
         # TODO: implementar
-        raise NotImplementedError
+        return self.disponibles() >= 1
     
     def __str__(self) -> str:
          return self.titulo
@@ -96,13 +98,17 @@ class Prestamo(models.Model):
 
     # TODO: implementar los campos:
     libro              = models.ForeignKey(Libro, on_delete=models.CASCADE)
-    nombre_prestatario = models.CharField
-    fecha_prestamo     = models.DateField
+    nombre_prestatario = models.CharField(max_length=100)
+    fecha_prestamo     = models.DateField(default=timezone.now) #de Django, conoce zonas horarias
     fecha_devolucion   = models.DateField (null=True, blank=True)
     #
     # Preguntas guía:
     # ¿Por qué usamos CASCADE aquí y PROTECT en Libro→Autor?
+    #es cascade porque si elimino un libro no tiene sentido que existan prestamos asociados a este
+
     # ¿Qué valor por defecto tendría sentido para fecha_prestamo?
+    #la fecha de hoy
+
     # Tip: podés usar default=timezone.now si querés fecha automática,
     #      o dejarlo sin default para que el test lo defina explícitamente.
 
