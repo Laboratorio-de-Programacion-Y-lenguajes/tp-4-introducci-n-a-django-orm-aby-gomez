@@ -47,7 +47,7 @@ class Libro(models.Model):
 
     # TODO: implementar los campos:
     titulo          = models.CharField(max_length=200)
-    isbn            = models.CharField (unique=True)
+    isbn            = models.CharField (max_length=100,unique=True)
     fecha_publicacion = models.DateField()
     cantidad_total  = models.PositiveIntegerField()
     autor           = models.ForeignKey(Autor, on_delete=models.PROTECT)
