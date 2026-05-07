@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 
 from .models import Autor, Libro
 
@@ -15,7 +15,7 @@ def libros_por_categoria(nombre_categoria: str):
     Returns:
         QuerySet[Libro]
 
-    Ejemplo de uso:
+    Ejemplo de uso: 
         libros = libros_por_categoria("fantasía")
         for libro in libros:
             print(libro.titulo)
@@ -65,7 +65,9 @@ def libros_sin_disponibilidad():
         ).filter(activos=models.F("cantidad_total"))
     """
     # TODO: implementar con annotate + F expression + filter
-    raise NotImplementedError
+    return Libro.objects.annotate(
+            activos=Count("prestamo", filter=Q(prestamo__fecha_devolucion__isnull=True))
+            ).filter(activos=F("cantidad_total"))
 
 
 def top_n_libros_mas_prestados(n: int):
